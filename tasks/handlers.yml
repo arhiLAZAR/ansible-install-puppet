@@ -2,3 +2,8 @@
   service:
     state: reloaded
     name: nginx
+
+- name: "restart puppet-server"
+  service:
+    state: restarted
+    name: puppetserver

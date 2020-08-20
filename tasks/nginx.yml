@@ -68,3 +68,4 @@
   service:
     state: started
     name: nginx
+    enabled: yes
