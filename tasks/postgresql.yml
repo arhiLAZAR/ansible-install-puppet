@@ -27,7 +27,7 @@
   service:
     state: restarted
     name: postgresql
-  when: allow_local_access.changed
+  when: allow_local_access.changed or java_memory_limit.changed
 
 - name: "Add postgeSQL database"
   postgresql_db:

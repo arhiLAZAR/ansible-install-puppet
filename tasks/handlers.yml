@@ -1,9 +1,14 @@
-- name: "reload nginx"
-  service:
-    state: reloaded
-    name: nginx
-
 - name: "restart puppet-server"
   service:
     state: restarted
     name: puppetserver
+
+- name: "restart puppetdb"
+  service:
+    state: restarted
+    name: puppetdb
+
+- name: "reload nginx"
+  service:
+    state: reloaded
+    name: nginx
