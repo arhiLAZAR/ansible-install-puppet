@@ -45,6 +45,7 @@
     priv: CONNECT
     login_host: "{{ psql_host }}"
     encrypted: true
+  no_log: True
 
 - name: "Grant privileges to puppetdb"
   postgresql_privs:
