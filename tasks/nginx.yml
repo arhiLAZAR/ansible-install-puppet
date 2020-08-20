@@ -23,8 +23,8 @@
     state: directory
     path: "/etc/nginx/{{ item.dir }}"
     mode: "{{ item.mode }}"
-    owner: root
-    group: root
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
   with_items:
     - dir: ssl
       mode: '0600'
@@ -43,8 +43,8 @@
   template:
     src: ../templates/etc/nginx/nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-    owner: root
-    group: root
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
     mode: 0644
   notify: "reload nginx"
 
@@ -52,8 +52,8 @@
   template:
     src: ../templates/etc/nginx/sites-available/puppet-proxy.conf.j2
     dest: /etc/nginx/sites-available/puppet-proxy.conf
-    owner: root
-    group: root
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
     mode: 0644
   notify: "reload nginx"
 

@@ -31,16 +31,16 @@
   file:
     state: directory
     path: "/etc/puppetlabs/code/environments/{{ puppet_environment }}"
-    owner: root
-    group: root
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
   notify: "restart puppet-server"
 
 - name: "Add configs for puppet-server"
   template:
     src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
     dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
-    owner: root
-    group: root
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
     mode: 0644
   notify: "restart puppet-server"
 
@@ -48,8 +48,8 @@
   file:
     state: directory
     path: "/etc/puppetlabs/puppet/eyaml/{{ item }}"
-    owner: puppet
-    group: puppet
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
   with_items: "{{ eyaml_pools }}"
   notify: "restart puppet-server"
   when: eyaml_pools is defined and eyaml_pools|length > 0
@@ -57,8 +57,8 @@
 - name: "Create eyaml keys' placeholders"
   file:
     path: "/etc/puppetlabs/puppet/eyaml/{{ item[0] }}/{{ item[1] }}"
-    owner: puppet
-    group: puppet
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
   with_nested:
     - "{{ eyaml_pools }}"
     - [ "public_key.pkcs7.pem", "private_key.pkcs7.pem" ]
@@ -75,8 +75,8 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: root
-    group: root
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
     mode: 0644
   with_items:
     - src: ../templates/etc/puppetlabs/puppet/puppet.conf.j2

@@ -19,8 +19,8 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: root
-    group: root
+    owner: "{{ puppetdb_user }}"
+    group: "{{ puppetdb_group }}"
     mode: 0644
   with_items:
     - src: ../templates/etc/puppetlabs/puppetdb/conf.d/database.ini.j2
