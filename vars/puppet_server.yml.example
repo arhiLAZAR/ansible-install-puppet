@@ -5,6 +5,9 @@ puppet_server_masterport: 8140
 puppet_server_hostname: "puppet6"
 puppet_server_fqdn: "puppet6.my-organization.org"
 
+puppet_user: "puppet"
+puppet_group: "puppet"
+
 eyaml_pools:
   - testing
   - staging
@@ -15,8 +18,13 @@ disable_agent_proxy: true
 puppet_agent_masterport: 443
 
 nginx_proxy_enabled: true
+nginx_user: "root"
+nginx_group: "root"
 
 puppetdb_enabled: true
+puppetdb_user: "puppet"
+puppetdb_group: "puppet"
+
 psql_user: puppet
 psql_name: puppetdb
 psql_passw: qwerty12345
