@@ -62,6 +62,8 @@
     state: link
     src: "/etc/nginx/sites-available/puppet-proxy.conf"
     dest: "/etc/nginx/sites-enabled/puppet-proxy.conf"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
   notify: "reload nginx"
 
 - name: "Start nginx"
