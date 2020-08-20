@@ -2,7 +2,7 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
-- name: "Add puppetserver in hosts"
+- name: "Add puppet-server in hosts"
   lineinfile:
     state: present
     path: "/etc/hosts"
@@ -12,12 +12,12 @@
   apt:
     deb: https://apt.puppetlabs.com/puppet{{ puppet_version }}-release-{{ ansible_distribution_release }}.deb
 
-- name: "Apt Update"
+- name: "Apt update"
   apt:
     update_cache: yes
   changed_when: false
 
-- name: "Install puppet server"
+- name: "Install puppet-server"
   apt:
     state: present
     name: puppetserver
@@ -34,7 +34,7 @@
     owner: root
     group: root
 
-- name: "Add configs for puppetserver"
+- name: "Add configs for puppet-server"
   template:
     src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
     dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
@@ -61,7 +61,7 @@
     - [ "public_key.pkcs7.pem", "private_key.pkcs7.pem" ]
   when: eyaml_pools is defined and eyaml_pools|length > 0
 
-- name: "Start puppetserver"
+- name: "Start puppet-server"
   service:
     state: started
     name: puppetserver

@@ -156,19 +156,17 @@
     - vars/puppet_server.yml
 
   handlers:
-    - name: "Include handlers"
+    - name: "Import handlers"
       import_tasks: tasks/handlers.yml
-      tags: test
 
   tasks:
-    - name: "Include puppet-server tasks"
+    - name: "Import puppet-server tasks"
       import_tasks: tasks/puppet_server.yml
 
-    - name: "Include puppetdb tasks"
+    - name: "Import puppetdb tasks"
       import_tasks: tasks/puppetdb.yml
       when: puppetdb_enabled is defined and puppetdb_enabled
 
-    - name: "Include nginx tasks"
+    - name: "Import nginx tasks"
       import_tasks: tasks/nginx.yml
       when: nginx_proxy_enabled is defined and nginx_proxy_enabled
-      tags: test
