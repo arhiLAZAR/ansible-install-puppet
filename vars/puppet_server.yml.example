@@ -1,0 +1,23 @@
+puppet_version: "6"
+
+puppet_server_ip: "10.0.0.1"
+puppet_server_masterport: 8140
+puppet_server_hostname: "puppet6"
+puppet_server_fqdn: "puppet6.my-organization.org"
+
+eyaml_pools:
+  - testing
+  - staging
+  - production
+
+puppet_environment: "master"
+disable_agent_proxy: true
+puppet_agent_masterport: 443
+
+nginx_proxy_enabled: true
+
+puppetdb_enabled: true
+psql_user: puppet
+psql_name: puppetdb
+psql_passw: qwerty12345
+psql_host: "127.0.0.1"

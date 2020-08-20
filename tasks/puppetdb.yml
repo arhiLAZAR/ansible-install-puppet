@@ -1,0 +1,41 @@
+- name: "Install puppetdb"
+  apt:
+    state: present
+    name: [ "puppetdb", "puppetdb-termini" ]
+
+- name: "Change JAVA memory usage limit to 2G"
+  lineinfile:
+    path: "/etc/default/puppetdb"
+    regexp: '^JAVA_ARGS="-Xmx192m"$'
+    line: 'JAVA_ARGS="-Xmx2g"'
+    backrefs: yes
+  register: allow_local_access
+
+- name: "Include postgreSQL tasks"
+  import_tasks: tasks/postgresql.yml
+
+- name: "Add configs for puppetDB"
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - src: ../templates/etc/puppetlabs/puppetdb/conf.d/database.ini.j2
+      dest: /etc/puppetlabs/puppetdb/conf.d/database.ini
+    - src: ../templates/etc/puppetlabs/puppetdb/conf.d/jetty.ini.j2
+      dest: /etc/puppetlabs/puppetdb/conf.d/jetty.ini
+    - src: ../templates/etc/puppetlabs/puppet/puppetdb.conf.j2
+      dest: /etc/puppetlabs/puppet/puppetdb.conf
+
+- name: "Create SSL-certs for puppetDB"
+  command: /opt/puppetlabs/bin/puppetdb ssl-setup
+  register: puppetdb_ssl_create
+  changed_when: 'puppetdb_ssl_create.rc != 0'
+
+- name: "Start puppetDB"
+  service:
+    state: started
+    name: puppetdb
+    enabled: yes

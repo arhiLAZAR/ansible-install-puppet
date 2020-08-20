@@ -1,0 +1,174 @@
+
+- hosts: puppet_agent
+  vars_files:
+    - vars/puppet_agent.yml
+  tasks:
+    #~ - name: Set hostname based on inventory name
+      #~ hostname:
+        #~ name: "{{ inventory_hostname }}"
+
+    - name: "Add Puppet 5 Repo [with proxy]"
+      apt:
+        deb: http://apt.puppetlabs.com/puppet5-release-{{ ansible_distribution_release }}.deb
+        update_cache: yes
+      environment:
+        http_proxy: http://{{ http_proxy_host }}:{{ http_proxy_port }}
+      when: disable_agent_proxy is not defined
+
+    - name: "Add Puppet 5 Repo [without proxy]"
+      apt:
+        deb: http://apt.puppetlabs.com/puppet5-release-{{ ansible_distribution_release }}.deb
+        update_cache: yes
+      when: disable_agent_proxy is defined
+
+    - name: "Apt Update"
+      apt: update_cache=yes
+      changed_when: false
+
+    - name: "Check If Puppet Package Already Unpacked"
+      stat:
+        path: "{{ puppet_package_path }}/opt/puppetlabs/"
+      register: puppet_agent_existance
+
+    - name: "Download deb puppet-agent"
+      command: apt-get download puppet-agent
+      args:
+        chdir: /tmp
+      register: apt_download_result
+      changed_when: "apt_download_result.rc != 0"
+      when: puppet_agent_existance.stat.exists == false
+
+    - name: "Get package filename"
+      shell: "ls /tmp/puppet-agent*"
+      register: puppet_agent_deb
+      changed_when: "puppet_agent_deb.stdout == ''"
+      when: puppet_agent_existance.stat.exists == false
+
+    - name: "Unpacking deb puppet-agent"
+      command: dpkg -x {{ puppet_agent_deb.stdout }} {{ puppet_package_path }}
+      register: dpkg_x_res
+      changed_when: "dpkg_x_res.rc != 0"
+      when: puppet_agent_existance.stat.exists == false
+
+    - name: "Change name of service for upstart [trusty]"
+      command: mv /opt/puppet5/etc/init.d/puppet {{ puppet_package_path }}/etc/init.d/puppet5
+      register: rename_service_result
+      changed_when: "rename_service_result.rc != 0"
+      when:
+        - puppet_agent_existance.stat.exists == false
+        - ansible_distribution_release == "trusty"
+
+    - name: "Change name of service for systemd [not trusty]"
+      command: mv /opt/puppet5/lib/systemd/system/puppet.service {{ puppet_package_path }}/lib/systemd/system/puppet5.service
+      register: rename_service_result
+      changed_when: "rename_service_result.rc != 0"
+      when:
+        - puppet_agent_existance.stat.exists == false
+        - ansible_distribution_release != "trusty"
+
+    - name: "Making Symbolic Links to New Location [common]"
+      file:
+        src: "{{ puppet_package_path }}/{{ item.source }}"
+        dest: "/{{ item.dest }}"
+        state: link
+      with_items:
+        - { source: 'etc/default/mcollective', dest: 'etc/default/mcollective'}
+        - { source: 'etc/default/pxp-agent', dest: 'etc/default/pxp-agent'}
+        - { source: 'etc/default/puppet', dest: 'etc/default/puppet'}
+        - { source: 'etc/puppetlabs/', dest: 'etc/puppetlabs'}
+        - { source: 'etc/logrotate.d/pxp-agent', dest: 'etc/logrotate.d/pxp-agent'}
+        - { source: 'etc/profile.d/puppet-agent.csh', dest: 'etc/profile.d/puppet-agent.csh'}
+        - { source: 'etc/profile.d/puppet-agent.sh', dest: 'etc/profile.d/puppet-agent.sh'}
+        - { source: 'var/log/puppetlabs/', dest: 'var/log/puppetlabs'}
+        - { source: 'opt/puppetlabs/', dest: 'opt/puppetlabs'}
+      ignore_errors: yes
+
+    - name: "Making Symbolic Links to New Location [trusty]"
+      file:
+        src: "{{ puppet_package_path }}/{{ item.source }}"
+        dest: "/{{ item.dest }}"
+        state: link
+      with_items:
+        - { source: 'etc/init.d/puppet5', dest: 'etc/init.d/puppet5'}
+        - { source: 'etc/init.d/pxp-agent', dest: 'etc/init.d/pxp-agent'}
+        - { source: 'etc/init.d/mcollective', dest: 'etc/init.d/mcollective'}
+      ignore_errors: yes
+      when: ansible_distribution_release == "trusty"
+
+    - name: "Making Symbolic Links to New Location [not trusty]"
+      file:
+        src: "{{ puppet_package_path }}/{{ item.source }}"
+        dest: "/{{ item.dest }}"
+        state: link
+      with_items:
+        - { source: 'lib/systemd/system/puppet5.service', dest: 'lib/systemd/system/puppet5.service'}
+        - { source: 'lib/systemd/system/pxp-agent.service', dest: 'lib/systemd/system/pxp-agent.service'}
+        - { source: 'lib/systemd/system/mcollective.service', dest: 'lib/systemd/system/mcollective.service'}
+        - { source: 'usr/lib/tmpfiles.d/puppet-agent.conf', dest: 'usr/lib/tmpfiles.d/puppet-agent.conf'}
+      ignore_errors: yes
+      when: ansible_distribution_release != "trusty"
+
+    - name: "Systemd Daemon Reload"
+      systemd:
+        daemon_reload: yes
+      when: ansible_distribution_release != "trusty"
+
+    - name: "Ensure Puppet5 Agent Disabled [trusty]"
+      service:
+        name: puppet5
+        state: stopped
+        enabled: no
+      when: ansible_distribution_release == "trusty"
+
+    - name: "Ensure Puppet5 Agent Disabled [not trusty]"
+      systemd:
+        name: puppet5
+        state: stopped
+        enabled: no
+      when: ansible_distribution_release != "trusty"
+
+    - name: "Add Conf File Puppet Agent"
+      template:
+        src: templates/etc/puppetlabs/puppet/puppet.conf.j2
+        dest: /etc/puppetlabs/puppet/puppet.conf
+        owner: root
+        group: root
+        mode: 0644
+      tags:
+        - puppet-agent-conf-update
+
+    - name: "Add Puppet Server in hosts"
+      lineinfile:
+        path: "/etc/hosts"
+        line : "{{ puppet_server_ip }} {{ puppet_server_hostname }}"
+        state: present
+
+    - name: "Add Puppet5 to /usr/local/bin"
+      copy:
+        src: files/puppet5
+        dest: /usr/local/bin/puppet5
+        mode: 0755
+        owner: root
+        group: root
+
+- hosts: puppet_server
+  vars_files:
+    - vars/puppet_server.yml
+
+  handlers:
+    - name: "Include handlers"
+      import_tasks: tasks/handlers.yml
+      tags: test
+
+  tasks:
+    - name: "Include puppet-server tasks"
+      import_tasks: tasks/puppet_server.yml
+
+    - name: "Include puppetdb tasks"
+      import_tasks: tasks/puppetdb.yml
+      when: puppetdb_enabled is defined and puppetdb_enabled
+
+    - name: "Include nginx tasks"
+      import_tasks: tasks/nginx.yml
+      when: nginx_proxy_enabled is defined and nginx_proxy_enabled
+      tags: test

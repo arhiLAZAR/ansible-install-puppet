@@ -1,0 +1,3 @@
+*.retry
+inventory_*
+vars/*.yml

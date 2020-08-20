@@ -1,0 +1,81 @@
+- name: Set hostname based on inventory name
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: "Add puppetserver in hosts"
+  lineinfile:
+    state: present
+    path: "/etc/hosts"
+    line : "{{ puppet_server_ip }}\t{{ puppet_server_fqdn }}\t{{ puppet_server_hostname }}"
+
+- name: "Add puppet{{ puppet_version }} repository"
+  apt:
+    deb: https://apt.puppetlabs.com/puppet{{ puppet_version }}-release-{{ ansible_distribution_release }}.deb
+
+- name: "Apt Update"
+  apt:
+    update_cache: yes
+  changed_when: false
+
+- name: "Install puppet server"
+  apt:
+    state: present
+    name: puppetserver
+
+- name: "Install dependencies"
+  apt:
+    state: present
+    pkg: [ "python3-pycurl", "python3-psycopg2", "ruby" ]
+
+- name: "Add directory for default puppet environment"
+  file:
+    state: directory
+    path: "/etc/puppetlabs/code/environments/{{ puppet_environment }}"
+    owner: root
+    group: root
+
+- name: "Add configs for puppetserver"
+  template:
+    src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
+    dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Create eyaml directories"
+  file:
+    state: directory
+    path: "/etc/puppetlabs/puppet/eyaml/{{ item }}"
+    owner: puppet
+    group: puppet
+  with_items: "{{ eyaml_pools }}"
+  when: eyaml_pools is defined and eyaml_pools|length > 0
+
+- name: "Create eyaml keys' placeholders"
+  file:
+    path: "/etc/puppetlabs/puppet/eyaml/{{ item[0] }}/{{ item[1] }}"
+    owner: puppet
+    group: puppet
+  with_nested:
+    - "{{ eyaml_pools }}"
+    - [ "public_key.pkcs7.pem", "private_key.pkcs7.pem" ]
+  when: eyaml_pools is defined and eyaml_pools|length > 0
+
+- name: "Start puppetserver"
+  service:
+    state: started
+    name: puppetserver
+    enabled: yes
+
+- name: "Add configs for puppet-agent"
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - src: ../templates/etc/puppetlabs/puppet/puppet.conf.j2
+      dest: /etc/puppetlabs/puppet/puppet.conf
+    - src: ../templates/etc/puppetlabs/puppet/routes.yaml.j2
+      dest: /etc/puppetlabs/puppet/routes.yaml
