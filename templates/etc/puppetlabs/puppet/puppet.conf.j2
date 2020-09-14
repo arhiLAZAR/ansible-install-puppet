@@ -56,7 +56,7 @@
   vardir                         = /opt/puppetlabs/puppet/cache
   yamldir                        = $vardir/yaml
   masterport                     = {{ puppet_agent_masterport }}
-{% if http_proxy_host is defined and http_proxy_port is defined and disable_agent_proxy is not defined %}
+{% if http_proxy_host is defined and http_proxy_port is defined and ( disable_agent_proxy is not defined or disable_agent_proxy == false ) %}
   http_proxy_host		 = {{ http_proxy_host }}
   http_proxy_port		 = {{ http_proxy_port }}
 {% endif %}
@@ -65,8 +65,9 @@
 {% if puppet_server_masterport is defined %}
   masterport                     = {{ puppet_server_masterport }}
 {% endif %}
+{% if puppetdb_enabled %}
   storeconfigs                   = true
   storeconfigs_backend           = puppetdb
-
+{% endif %}
 [agent]
   ordering                       = manifest
