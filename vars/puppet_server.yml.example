@@ -15,6 +15,7 @@ eyaml_pools:
 
 puppet_environment: "master"
 disable_agent_proxy: true
+puppet_agent_service_enabled: true
 puppet_agent_masterport: 443
 
 nginx_proxy_enabled: true
