@@ -12,8 +12,8 @@ server {
 
     root /var/www/html;
 
-    ssl_certificate         /etc/puppetlabs/puppet/ssl/certs/puppet{{ puppet_version }}.pem;
-    ssl_certificate_key     /etc/puppetlabs/puppet/ssl/private_keys/puppet{{ puppet_version }}.pem;
+    ssl_certificate         /etc/puppetlabs/puppet/ssl/certs/{{ puppet_server_hostname }}.pem;
+    ssl_certificate_key     /etc/puppetlabs/puppet/ssl/private_keys/{{ puppet_server_hostname }}.pem;
     ssl_client_certificate  /etc/puppetlabs/puppet/ssl/ca/ca_crt.pem;
     ssl_crl                 /etc/puppetlabs/puppet/ssl/ca/ca_crl.pem;
     ssl_verify_client       optional;
