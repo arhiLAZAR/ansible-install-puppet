@@ -1,0 +1,53 @@
+- name: "Add puppet{{ puppet_version }} repository [with proxy]"
+  apt:
+    deb: http://apt.puppetlabs.com/puppet{{ puppet_version }}-release-{{ ansible_distribution_release }}.deb
+  environment:
+    http_proxy: http://{{ http_proxy_host }}:{{ http_proxy_port }}
+  when: disable_agent_proxy is not defined or disable_agent_proxy == false
+
+- name: "Add puppet{{ puppet_version }} repository [without proxy]"
+  apt:
+    deb: https://apt.puppetlabs.com/puppet{{ puppet_version }}-release-{{ ansible_distribution_release }}.deb
+  when: disable_agent_proxy is defined and disable_agent_proxy == true
+
+- name: "Install puppet-agent"
+  apt:
+    state: present
+    name: puppet-agent
+    update_cache: yes
+
+- name: "Add config for puppet-agent"
+  template:
+    src: ../templates/etc/puppetlabs/puppet/puppet.conf.j2
+    dest: /etc/puppetlabs/puppet/puppet.conf
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
+    mode: 0644
+
+- name: "Start and enable puppet-agent service"
+  service:
+    state: started
+    name: puppet
+    enabled: yes
+  when: puppet_agent_service_enabled
+
+- name: "Stop and disable puppet-agent service"
+  service:
+    state: stopped
+    name: puppet
+    enabled: no
+  when: not puppet_agent_service_enabled
+
+- name: "Add Puppet Server in hosts"
+  lineinfile:
+    path: "/etc/hosts"
+    line : "{{ puppet_server_ip }} {{ puppet_server_hostname }}"
+    state: present
+
+- name: "Add puppet5 to /usr/local/bin"
+  copy:
+    src: files/puppet5_new
+    dest: /usr/local/bin/puppet5
+    mode: 0755
+    owner: root
+    group: root
