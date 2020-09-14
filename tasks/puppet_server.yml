@@ -1,6 +1,6 @@
-- name: Set hostname based on inventory name
+- name: Set hostname
   hostname:
-    name: "{{ inventory_hostname }}"
+    name: "{{ puppet_server_hostname }}"
 
 - name: "Add puppet-server in hosts"
   lineinfile:
