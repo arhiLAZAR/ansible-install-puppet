@@ -86,3 +86,17 @@
       dest: /etc/puppetlabs/puppet/puppet.conf
     - src: ../templates/etc/puppetlabs/puppet/routes.yaml.j2
       dest: /etc/puppetlabs/puppet/routes.yaml
+
+- name: "Start and enable puppet-agent service"
+  service:
+    state: started
+    name: puppet
+    enabled: yes
+  when: puppet_agent_service_enabled
+
+- name: "Stop and disable puppet-agent service"
+  service:
+    state: stopped
+    name: puppet
+    enabled: no
+  when: not puppet_agent_service_enabled
