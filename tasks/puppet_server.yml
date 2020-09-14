@@ -55,8 +55,11 @@
   when: eyaml_pools is defined and eyaml_pools|length > 0
 
 - name: "Create eyaml keys' placeholders"
-  file:
-    path: "/etc/puppetlabs/puppet/eyaml/{{ item[0] }}/{{ item[1] }}"
+  copy:
+    dest: "/etc/puppetlabs/puppet/eyaml/{{ item[0] }}/{{ item[1] }}"
+    content: ""
+    force: no
+    mode: 0644
     owner: "{{ puppet_user }}"
     group: "{{ puppet_group }}"
   with_nested:
