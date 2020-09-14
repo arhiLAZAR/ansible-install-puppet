@@ -8,6 +8,7 @@
   apt_repository:
     state: present
     repo: 'deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main'
+    mode: 0644
     update_cache: yes
 
 - name: "Install postgresql"
@@ -45,7 +46,7 @@
     priv: CONNECT
     login_host: "{{ psql_host }}"
     encrypted: true
-  no_log: True
+  no_log: true
 
 - name: "Grant privileges to puppetdb"
   postgresql_privs:
