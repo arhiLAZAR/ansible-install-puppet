@@ -12,15 +12,11 @@
   apt:
     deb: https://apt.puppetlabs.com/puppet{{ puppet_version }}-release-{{ ansible_distribution_release }}.deb
 
-- name: "Apt update"
-  apt:
-    update_cache: yes
-  changed_when: false
-
 - name: "Install puppet-server"
   apt:
     state: present
     name: puppetserver
+    update_cache: yes
 
 - name: "Install dependencies"
   apt:
