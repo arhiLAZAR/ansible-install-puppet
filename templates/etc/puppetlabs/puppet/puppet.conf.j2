@@ -2,10 +2,10 @@
 [main]
   basemodulepath                 = $codedir/modules/original:$codedir/modules/custom/patched:$codedir/modules/custom/selectel:$codedir/modules/custom/basic:$codedir/modules/custom/pool_specific
   bucketdir                      = $vardir/bucket
-  ca_port                        = {{ ca_port|default(puppet_agent_masterport) }}
+  ca_port                        = {{ puppet_ca_port|default(puppet_agent_masterport) }}
   ca_server                      = $server
   certdir                        = $ssldir/certs
-  certname                       = {{ cert_name| default(inventory_hostname) }}
+  certname                       = {{ puppet_cert_name| default(inventory_hostname) }}
   classfile                      = $statedir/classes.txt
   client_datadir                 = $vardir/client_data
   clientbucketdir                = $vardir/clientbucket
