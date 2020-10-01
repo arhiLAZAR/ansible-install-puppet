@@ -1,0 +1,47 @@
+- name: "Remove old puppet packages"
+  apt:
+    state: absent
+    purge: true
+    name: [ puppet5-release, puppet, puppet-common, puppet-agent ]
+
+- name: "Find downloaded puppet *.deb"
+  find:
+    paths: /tmp
+    patterns: puppet-agent*
+  register: tmp_puppet_debs
+
+- name: "Remove downloaded puppet *.deb"
+  file:
+    state: absent
+    name: "{{ item.path }}"
+  with_items: "{{ tmp_puppet_debs.files }}"
+
+- name: "Remove old puppet files and dirs"
+  file:
+    state: absent
+    name: "{{ item }}"
+  with_items:
+    - /opt/puppet5
+    - /opt/puppetlabs
+    - /etc/puppet5
+    - /etc/puppetlabs
+    - /etc/default/mcollective
+    - /etc/default/pxp-agent
+    - /etc/default/puppet
+    - /etc/logrotate.d/pxp-agent
+    - /etc/profile.d/puppet-agent.csh
+    - /etc/profile.d/puppet-agent.sh
+    - /var/log/puppetlabs
+    - /etc/init.d/puppet5
+    - /etc/init.d/pxp-agent
+    - /etc/init.d/mcollective
+    - /lib/systemd/system/puppet5.service
+    - /lib/systemd/system/pxp-agent.service
+    - /lib/systemd/system/mcollective.service
+    - /usr/lib/tmpfiles.d/puppet-agent.conf
+    - /usr/local/bin/puppet5
+
+- name: "Apt update"
+  apt:
+    update_cache: yes
+  changed_when: false
