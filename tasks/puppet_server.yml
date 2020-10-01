@@ -33,11 +33,16 @@
 
 - name: "Add configs for puppet-server"
   template:
-    src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
-    dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: "{{ puppet_user }}"
     group: "{{ puppet_group }}"
     mode: 0644
+  with_items:
+    - src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
+      dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
+    - src: ../templates/etc/puppetlabs/puppetserver/conf.d/webserver.conf.j2
+      dest: /etc/puppetlabs/puppetserver/conf.d/webserver.conf
   notify: "restart puppet-server"
 
 - name: "Create eyaml directories"
