@@ -40,3 +40,8 @@
     - name: "Install nginx"
       import_tasks: tasks/nginx.yml
       when: nginx_proxy_enabled is defined and nginx_proxy_enabled
+
+    - name: "Install r10k"
+      import_tasks: tasks/r10k.yml
+      tags:
+        - r10k

@@ -30,3 +30,5 @@ psql_user: puppet
 psql_name: puppetdb
 psql_passw: qwerty12345
 psql_host: "127.0.0.1"
+
+r10k_git_remote: "git@github.com:username/puppet6-code.git"

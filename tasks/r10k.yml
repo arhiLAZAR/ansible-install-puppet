@@ -1,0 +1,25 @@
+- name: "Install r10k"
+  gem:
+    state: present
+    name: r10k
+    user_install: no
+
+- name: "Install git"
+  apt:
+    state: present
+    name: git
+
+- name: "Create directory for r10k"
+  file:
+    state: directory
+    path: "/etc/puppetlabs/r10k"
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
+
+- name: "Add r10k config"
+  template:
+    src: "../templates/etc/puppetlabs/r10k/r10k.yaml.j2"
+    dest: "/etc/puppetlabs/r10k/r10k.yaml"
+    owner: "{{ puppet_user }}"
+    group: "{{ puppet_group }}"
+    mode: 0644
