@@ -32,14 +32,19 @@
   tasks:
     - name: "Install puppet-server"
       import_tasks: tasks/puppet_server.yml
+      tags:
+        - always
+        - puppetserver
 
     - name: "Install puppetdb"
       import_tasks: tasks/puppetdb.yml
-      when: puppetdb_enabled is defined and puppetdb_enabled
+      tags:
+        - puppetdb
 
     - name: "Install nginx"
       import_tasks: tasks/nginx.yml
-      when: nginx_proxy_enabled is defined and nginx_proxy_enabled
+      tags:
+        - nginx
 
     - name: "Install r10k"
       import_tasks: tasks/r10k.yml

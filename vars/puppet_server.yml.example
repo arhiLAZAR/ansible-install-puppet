@@ -18,7 +18,6 @@ disable_agent_proxy: true
 puppet_agent_service_enabled: true
 puppet_agent_masterport: 443
 
-nginx_proxy_enabled: true
 nginx_user: "root"
 nginx_group: "root"
 
