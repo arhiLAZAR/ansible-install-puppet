@@ -1,5 +1,5 @@
 upstream puppetserver {
-	server 127.0.0.1:{{ puppet_server_masterport }};
+	server {{ puppet_server_master_ip }}:{{ puppet_server_masterport }};
 }
 
 server {
