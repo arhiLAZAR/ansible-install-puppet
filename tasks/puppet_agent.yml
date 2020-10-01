@@ -41,7 +41,7 @@
 - name: "Add Puppet Server in hosts"
   lineinfile:
     path: "/etc/hosts"
-    line : "{{ puppet_server_ip }} {{ puppet_server_hostname }}"
+    line : "{{ puppet_server_ip }}\t{{ puppet_server_fqdn }}\t{{ puppet_server_hostname }}"
     state: present
 
 - name: "Add puppet5 to /usr/local/bin"
