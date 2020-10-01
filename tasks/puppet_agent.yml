@@ -46,7 +46,7 @@
 
 - name: "Add puppet5 to /usr/local/bin"
   copy:
-    src: files/puppet5_new
+    src: files/puppet5
     dest: /usr/local/bin/puppet5
     mode: 0755
     owner: root
