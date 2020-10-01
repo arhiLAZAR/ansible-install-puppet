@@ -14,6 +14,12 @@
       tags:
         - always
 
+    - name: "Manage certificates"
+      import_tasks: tasks/manage_cert.yml
+      tags:
+        - allow_cert_management
+        - never
+
 # Install server
 - hosts: puppet_server
   vars_files:

@@ -1,0 +1,44 @@
+- name: "Register fingerprint on agent"
+  shell: "openssl x509 -noout -fingerprint -sha256 -in /etc/puppetlabs/puppet/ssl/certs/{{ inventory_hostname }}.pem"
+  register: agent_fingerprint
+  failed_when: false
+  changed_when: false
+
+- name: "Register fingerprint on server"
+  shell: "/opt/puppetlabs/bin/puppetserver ca list --certname {{ inventory_hostname }}"
+  register: server_fingerprint
+  delegate_to: "{{ puppet_server_hostname }}"
+  failed_when: false
+  changed_when: false
+
+- name: "Check if fingerprints don't match"
+  shell: echo ""  # Workaround to register short variable
+  register: fingerprints_equality
+  when:  agent_fingerprint.stdout | regex_search('([0-9a-zA-Z]{2}:)+[0-9a-zA-Z]{2}') | upper !=
+        server_fingerprint.stdout | regex_search('([0-9a-zA-Z]{2}:)+[0-9a-zA-Z]{2}') | upper
+
+- name: "Remove old cert on agent"
+  file:
+    path: /etc/puppetlabs/puppet/ssl
+    state: absent
+  when: fingerprints_equality.changed
+
+- name: "Remove old cert on server"
+  shell: "/opt/puppetlabs/bin/puppetserver ca clean --certname {{ inventory_hostname }}"
+  delegate_to: "{{ puppet_server_hostname }}"
+  failed_when: false
+  when: fingerprints_equality.changed
+
+- name: "Request cert"
+  shell: "/opt/puppetlabs/puppet/bin/puppet agent -t --noop"
+  failed_when: false
+  when: fingerprints_equality.changed or agent_fingerprint.rc != 0
+
+- name: "Sign cert"
+  shell: "/opt/puppetlabs/bin/puppetserver ca sign --certname {{ inventory_hostname }}"
+  delegate_to: "{{ puppet_server_hostname }}"
+  when: fingerprints_equality.changed or agent_fingerprint.rc != 0
+
+- name: "Run puppet-agent with --noop"
+  shell: "/opt/puppetlabs/puppet/bin/puppet agent -t --noop"
+  when: fingerprints_equality.changed or agent_fingerprint.rc != 0
