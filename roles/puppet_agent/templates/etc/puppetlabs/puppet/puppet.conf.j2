@@ -2,7 +2,7 @@
 [main]
   basemodulepath                 = $codedir/modules/original:$codedir/modules/custom/patched:$codedir/modules/custom/selectel:$codedir/modules/custom/basic:$codedir/modules/custom/pool_specific
   bucketdir                      = $vardir/bucket
-  ca_port                        = {{ puppet_ca_port|default(puppet_agent_masterport) }}
+  ca_port                        = {{ puppet_ca_port|default(puppet_server_https_port) }}
   ca_server                      = $server
   certdir                        = $ssldir/certs
   certname                       = {{ puppet_cert_name| default(inventory_hostname) }}
@@ -55,19 +55,11 @@
   statefile                      = $statedir/state.yaml
   vardir                         = /opt/puppetlabs/puppet/cache
   yamldir                        = $vardir/yaml
-  masterport                     = {{ puppet_agent_masterport }}
+  masterport                     = {{ puppet_server_https_port }}
 {% if http_proxy_host is defined and http_proxy_port is defined and ( disable_agent_proxy is not defined or disable_agent_proxy == false ) %}
   http_proxy_host		 = {{ http_proxy_host }}
   http_proxy_port		 = {{ http_proxy_port }}
 {% endif %}
 
-[master]
-{% if puppet_server_masterport is defined %}
-  masterport                     = {{ puppet_server_masterport }}
-{% endif %}
-{% if puppetdb_enabled %}
-  storeconfigs                   = true
-  storeconfigs_backend           = puppetdb
-{% endif %}
 [agent]
   ordering                       = manifest

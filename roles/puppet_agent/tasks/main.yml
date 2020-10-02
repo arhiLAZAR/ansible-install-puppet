@@ -1,0 +1,16 @@
+- name: "Remove old puppet-agent"
+  import_tasks: remove_puppet5_agent.yml
+  tags:
+    - never
+    - clean_up_after_puppet5
+
+- name: "Install puppet-agent"
+  import_tasks: install_puppet_agent.yml
+  tags:
+    - always
+
+- name: "Manage certificates"
+  import_tasks: manage_cert.yml
+  tags:
+    - allow_cert_management
+    - never

@@ -18,7 +18,7 @@
 
 - name: "Add r10k config"
   template:
-    src: "../templates/etc/puppetlabs/r10k/r10k.yaml.j2"
+    src: "templates/etc/puppetlabs/r10k/r10k.yaml.j2"
     dest: "/etc/puppetlabs/r10k/r10k.yaml"
     owner: "{{ puppet_user }}"
     group: "{{ puppet_group }}"

@@ -32,7 +32,7 @@
 
 - name: "Add postgeSQL database"
   postgresql_db:
-    name: "{{ psql_name }}"
+    name: "{{ psql_db_name }}"
     encoding: UTF-8
     lc_collate: C.UTF-8
     lc_ctype: C.UTF-8
@@ -41,7 +41,7 @@
 - name: "Add postgeSQL user"
   postgresql_user:
     name: "{{ psql_user }}"
-    db: "{{ psql_name }}"
+    db: "{{ psql_db_name }}"
     password: "{{ psql_passw }}"
     priv: CONNECT
     login_host: "{{ psql_host }}"
@@ -50,7 +50,7 @@
 
 - name: "Grant privileges to puppetdb"
   postgresql_privs:
-    db: "{{ psql_name }}"
+    db: "{{ psql_db_name }}"
     privs: ALL
     type: schema
     objs: public

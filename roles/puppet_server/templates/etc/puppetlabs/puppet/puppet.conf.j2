@@ -1,0 +1,73 @@
+# {{ ansible_managed }}
+[main]
+  basemodulepath                 = $codedir/modules/original:$codedir/modules/custom/patched:$codedir/modules/custom/selectel:$codedir/modules/custom/basic:$codedir/modules/custom/pool_specific
+  bucketdir                      = $vardir/bucket
+  ca_port                        = {{ puppet_ca_port|default(puppet_server_https_port) }}
+  ca_server                      = $server
+  certdir                        = $ssldir/certs
+  certname                       = {{ puppet_cert_name| default(inventory_hostname) }}
+  classfile                      = $statedir/classes.txt
+  client_datadir                 = $vardir/client_data
+  clientbucketdir                = $vardir/clientbucket
+  clientyamldir                  = $vardir/client_yaml
+  codedir                        = /etc/puppetlabs/code
+  confdir                        = /etc/puppetlabs/puppet
+  config                         = $confdir/puppet.conf
+  config_file_name               = puppet.conf
+  daemonize                      = false
+  deviceconfig                   = $confdir/device.conf
+  devicedir                      = $vardir/devices
+  environment                    = {{ puppet_environment }}
+  environmentpath                = $codedir/environments
+  factpath                       = $vardir/lib/facter:$vardir/facts
+  fileserverconfig               = $confdir/fileserver.conf
+  filetimeout                    = 15
+  graphdir                       = $statedir/graphs
+  hostcrl                        = $ssldir/crl.pem
+  lastrunfile                    = $statedir/last_run_summary.yaml
+  libdir                         = $vardir/lib
+  logdir                         = /var/log/puppetlabs/puppet
+  localcacert                    = $certdir/ca.pem
+  module_working_dir             = $vardir/puppet-module
+  node_name_value                = $certname
+  passfile                       = $privatedir/password
+  pidfile                        = $rundir/master.pid
+  plugindest                     = $libdir
+  pluginsource                   = puppet:///plugins
+  pluginfactdest                 = $vardir/facts.d
+  pluginfactsource               = puppet:///pluginfacts
+  privatedir                     = $ssldir/private
+  privatekeydir                  = $ssldir/private_keys
+  publickeydir                   = $ssldir/public_keys
+  puppetdlog                     = $logdir/puppetd.log
+  reportdir                      = $vardir/reports
+  report_port                    = $masterport
+  report_server                  = $server
+  requestdir                     = $ssldir/certificate_requests
+  resourcefile                   = $statedir/resources.txt
+  route_file                     = $confdir/routes.yaml
+  rundir                         = /var/run/puppetlabs
+  server                         = {{ puppet_server_hostname }}
+  server_datadir                 = $vardir/server_data
+  splaylimit                     = 1800
+  ssldir                         = $confdir/ssl
+  statedir                       = $vardir/state
+  statefile                      = $statedir/state.yaml
+  vardir                         = /opt/puppetlabs/puppet/cache
+  yamldir                        = $vardir/yaml
+  masterport                     = {{ puppet_server_https_port }}
+{% if http_proxy_host is defined and http_proxy_port is defined and ( disable_agent_proxy is not defined or disable_agent_proxy == false ) %}
+  http_proxy_host		 = {{ http_proxy_host }}
+  http_proxy_port		 = {{ http_proxy_port }}
+{% endif %}
+
+[master]
+{% if puppet_server_masterport is defined %}
+  masterport                     = {{ puppet_server_masterport }}
+{% endif %}
+{% if puppetdb_enabled %}
+  storeconfigs                   = true
+  storeconfigs_backend           = puppetdb
+{% endif %}
+[agent]
+  ordering                       = manifest

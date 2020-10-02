@@ -18,7 +18,7 @@
 
 - name: "Add config for puppet-agent"
   template:
-    src: ../templates/etc/puppetlabs/puppet/puppet.conf.j2
+    src: templates/etc/puppetlabs/puppet/puppet.conf.j2
     dest: /etc/puppetlabs/puppet/puppet.conf
     owner: "{{ puppet_user }}"
     group: "{{ puppet_group }}"

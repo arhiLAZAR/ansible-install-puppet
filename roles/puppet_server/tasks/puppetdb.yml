@@ -13,7 +13,7 @@
   notify: "restart puppetdb"
 
 - name: "Include postgreSQL tasks"
-  import_tasks: tasks/postgresql.yml
+  import_tasks: postgresql.yml
 
 - name: "Add configs for puppetDB"
   template:
@@ -23,11 +23,11 @@
     group: "{{ puppetdb_group }}"
     mode: 0644
   with_items:
-    - src: ../templates/etc/puppetlabs/puppetdb/conf.d/database.ini.j2
+    - src: templates/etc/puppetlabs/puppetdb/conf.d/database.ini.j2
       dest: /etc/puppetlabs/puppetdb/conf.d/database.ini
-    - src: ../templates/etc/puppetlabs/puppetdb/conf.d/jetty.ini.j2
+    - src: templates/etc/puppetlabs/puppetdb/conf.d/jetty.ini.j2
       dest: /etc/puppetlabs/puppetdb/conf.d/jetty.ini
-    - src: ../templates/etc/puppetlabs/puppet/puppetdb.conf.j2
+    - src: templates/etc/puppetlabs/puppet/puppetdb.conf.j2
       dest: /etc/puppetlabs/puppet/puppetdb.conf
   notify: "restart puppetdb"
 

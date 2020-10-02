@@ -42,7 +42,7 @@
 
 - name: "Add base nginx config"
   template:
-    src: ../templates/etc/nginx/nginx.conf.j2
+    src: templates/etc/nginx/nginx.conf.j2
     dest: /etc/nginx/nginx.conf
     owner: "{{ nginx_user }}"
     group: "{{ nginx_group }}"
@@ -51,7 +51,7 @@
 
 - name: "Add nginx-config for puppetserver"
   template:
-    src: ../templates/etc/nginx/sites-available/puppet-proxy.conf.j2
+    src: templates/etc/nginx/sites-available/puppet-proxy.conf.j2
     dest: /etc/nginx/sites-available/puppet-proxy.conf
     owner: "{{ nginx_user }}"
     group: "{{ nginx_group }}"

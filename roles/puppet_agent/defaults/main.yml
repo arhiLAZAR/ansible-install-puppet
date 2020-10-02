@@ -1,0 +1,13 @@
+puppet_server_ip: 10.0.0.1
+puppet_server_https_port: 443
+
+puppet_version: 6
+puppet_server_hostname: "puppet{{ puppet_version }}"
+puppet_server_fqdn: "puppet{{ puppet_version }}.my-organization.org"
+
+puppet_environment: "master"
+
+puppet_agent_service_enabled: true
+
+puppet_user: "puppet"
+puppet_group: "puppet"

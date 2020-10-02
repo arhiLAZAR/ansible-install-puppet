@@ -1,5 +1,0 @@
-puppet_server_hostname: "puppet6"
-puppet_server_ip: "10.0.0.1"
-puppet_agent_masterport: "443"
-puppet_environment: "master"
-puppet_package_path: "/opt/puppet5"

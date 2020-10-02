@@ -39,9 +39,9 @@
     group: "{{ puppet_group }}"
     mode: 0644
   with_items:
-    - src: ../templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
+    - src: templates/etc/puppetlabs/puppetserver/conf.d/auth.conf.j2
       dest: /etc/puppetlabs/puppetserver/conf.d/auth.conf
-    - src: ../templates/etc/puppetlabs/puppetserver/conf.d/webserver.conf.j2
+    - src: templates/etc/puppetlabs/puppetserver/conf.d/webserver.conf.j2
       dest: /etc/puppetlabs/puppetserver/conf.d/webserver.conf
   notify: "restart puppet-server"
 
@@ -83,9 +83,9 @@
     group: "{{ puppet_group }}"
     mode: 0644
   with_items:
-    - src: ../templates/etc/puppetlabs/puppet/puppet.conf.j2
+    - src: templates/etc/puppetlabs/puppet/puppet.conf.j2
       dest: /etc/puppetlabs/puppet/puppet.conf
-    - src: ../templates/etc/puppetlabs/puppet/routes.yaml.j2
+    - src: templates/etc/puppetlabs/puppet/routes.yaml.j2
       dest: /etc/puppetlabs/puppet/routes.yaml
 
 - name: "Start and enable puppet-agent service"

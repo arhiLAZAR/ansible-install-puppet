@@ -1,0 +1,20 @@
+- name: "Install puppet-server"
+  import_tasks: install_puppet_server.yml
+  tags:
+    - always
+    - puppetserver
+
+- name: "Install puppetdb"
+  import_tasks: puppetdb.yml
+  tags:
+    - puppetdb
+
+- name: "Install nginx"
+  import_tasks: nginx.yml
+  tags:
+    - nginx
+
+- name: "Install r10k"
+  import_tasks: r10k.yml
+  tags:
+    - r10k

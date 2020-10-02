@@ -1,0 +1,36 @@
+puppet_server_ip: 10.0.0.1
+puppet_server_https_port: 443
+
+puppet_server_master_ip: 127.0.0.1
+puppet_server_masterport: 8140
+
+puppet_version: 6
+puppet_server_hostname: "puppet{{ puppet_version }}"
+puppet_server_fqdn: "puppet{{ puppet_version }}.my-organization.org"
+
+puppet_user: "puppet"
+puppet_group: "puppet"
+
+puppet_environment: "master"
+
+disable_agent_proxy: true
+puppet_agent_service_enabled: true
+
+eyaml_pools:
+  - testing
+  - staging
+  - production
+
+nginx_user: "nginx"
+nginx_group: "nginx"
+
+puppetdb_enabled: true
+puppetdb_user: "{{ puppet_user }}"
+puppetdb_group: "{{ puppet_group }}"
+
+psql_host: 127.0.0.1
+psql_user: puppet
+psql_passw: qwerty12345
+psql_db_name: puppetdb
+
+r10k_git_remote: "git@github.com:username/puppet{{ puppet_version }}-code.git"
